@@ -1,0 +1,33 @@
+# dependencies / build
+node_modules/
+.next/
+out/
+next-env.d.ts
+*.tsbuildinfo
+npm-debug.log*
+
+# env — never commit, this repo is public
+.env*
+
+# AI working files — never pushed (owner's rule)
+.superpowers/
+docs/superpowers/
+.claude/
+
+.DS_Store
+
+# scaffold extras (kept from create-next-app defaults)
+/.pnp
+.pnp.*
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/versions
+/coverage
+/build
+*.pem
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+.vercel
