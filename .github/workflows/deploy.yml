@@ -1,0 +1,92 @@
+name: Verify and deploy
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: madebylico-deploy
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Set up Node
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: 26
+          cache: npm
+
+      - name: Install
+        run: npm ci
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Type-check
+        run: npm run typecheck
+
+      - name: Build (validates MDX frontmatter)
+        run: npm run build
+
+      - name: Validate Compose file
+        run: |
+          docker network create proxy
+          docker compose config --quiet
+
+  deploy:
+    needs: verify
+    if: success() && github.event_name != 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check that deploy secrets are configured
+        env:
+          SERVER_HOST: ${{ secrets.SERVER_HOST }}
+          SERVER_USER: ${{ secrets.SERVER_USER }}
+          SERVER_PASSWORD: ${{ secrets.SERVER_PASSWORD }}
+        run: |
+          if [ -z "$SERVER_HOST" ] || [ -z "$SERVER_USER" ] || [ -z "$SERVER_PASSWORD" ]; then
+            echo "::error::Deploy secrets are not configured. Add SERVER_HOST, SERVER_USER, and SERVER_PASSWORD to the repository secrets, then re-run."
+            exit 1
+          fi
+
+      - name: Check out repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Copy project to server
+        uses: appleboy/scp-action@ff85246acaad7bdce478db94a363cd2bf7c90345 # v1.0.0
+        with:
+          host: ${{ secrets.SERVER_HOST }}
+          username: ${{ secrets.SERVER_USER }}
+          password: ${{ secrets.SERVER_PASSWORD }}
+          port: 22
+          source: "."
+          target: madebylico
+          rm: true
+          overwrite: true
+
+      - name: Build and start on server
+        uses: appleboy/ssh-action@0ff4204d59e8e51228ff73bce53f80d53301dee2 # v1.2.5
+        with:
+          host: ${{ secrets.SERVER_HOST }}
+          username: ${{ secrets.SERVER_USER }}
+          password: ${{ secrets.SERVER_PASSWORD }}
+          port: 22
+          command_timeout: 30m
+          script: |
+            set -euo pipefail
+            cd "$HOME/madebylico"
+            docker network inspect proxy >/dev/null 2>&1 || docker network create proxy
+            docker compose -p madebylico build
+            docker compose -p madebylico up -d
+            docker image prune -f
