@@ -46,7 +46,7 @@ jobs:
 
   deploy:
     needs: verify
-    if: success() && github.event_name != 'pull_request'
+    if: success() && github.event_name != 'pull_request' && (github.event_name != 'workflow_dispatch' || github.ref == 'refs/heads/main')
     runs-on: ubuntu-latest
     steps:
       - name: Check that deploy secrets are configured
