@@ -1,69 +1,70 @@
-import Image from "next/image";
+import { getAllProjects } from "@/lib/projects";
+import { site } from "@/site.config";
+import { ProjectCard } from "@/components/ProjectCard";
+import { ContactBand } from "@/components/ContactBand";
 
 export default function Home() {
+  const projects = getAllProjects();
+  const liveCount = projects.filter((p) => p.status === "live").length;
+  const wipCount = projects.filter(
+    (p) => p.status === "prototype" || p.status === "idea",
+  ).length;
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert h-5 w-[100px]"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the{" "}
-            <code className="rounded bg-black/[.06] px-1.5 py-0.5 font-mono text-[0.9em] dark:bg-white/[.08]">
-              page.tsx
-            </code>{" "}
-            file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
+    <>
+      <section className="max-w-2xl pb-10 pt-16 sm:pt-24">
+        <h1 className="silver-text text-5xl font-extrabold leading-[1.08] tracking-tight sm:text-6xl">
+          Ideas, shipped early.
+        </h1>
+        <p className="mt-5 text-base leading-relaxed text-muted">
+          I&apos;m Lico. I build fast prototypes and put every idea out in the
+          open — finished or not. Take one, use one, or tell me which deserves
+          to grow.
+        </p>
+        <div className="mt-7 flex gap-3">
           <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+            href="#projects"
+            className="rounded-full bg-paper px-5 py-2 text-sm font-semibold text-ink transition hover:bg-white"
           >
-            <Image
-              className="dark:invert h-[14px] w-4"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={14}
-            />
-            Deploy Now
+            See projects
           </a>
           <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+            href={`mailto:${site.email}`}
+            className="rounded-full border border-neutral-700 px-5 py-2 text-sm font-semibold text-paper transition hover:border-neutral-400"
           >
-            Documentation
+            Email me
           </a>
         </div>
-      </main>
-    </div>
+        <div className="mt-10 flex gap-8 text-xs text-muted">
+          {liveCount > 0 && (
+            <span>
+              <b className="block text-base text-paper">{liveCount}</b> live
+            </span>
+          )}
+          {wipCount > 0 && (
+            <span>
+              <b className="block text-base text-paper">{wipCount}</b> in the
+              open
+            </span>
+          )}
+          <span>
+            <b className="block text-base text-paper">∞</b> ideas
+          </span>
+        </div>
+      </section>
+
+      <section id="projects" className="scroll-mt-8 pb-14">
+        <h2 className="mb-4 text-[11px] font-bold uppercase tracking-[0.2em] text-faint">
+          Projects
+        </h2>
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+          {projects.map((project) => (
+            <ProjectCard key={project.slug} project={project} />
+          ))}
+        </div>
+      </section>
+
+      <ContactBand />
+    </>
   );
 }
