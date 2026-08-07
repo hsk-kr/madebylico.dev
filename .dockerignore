@@ -1,0 +1,10 @@
+node_modules
+.next
+out
+.git
+.github
+docs
+.superpowers
+.claude
+*.md
+.env*
