@@ -92,3 +92,30 @@ jobs:
             docker compose -p madebylico build
             docker compose -p madebylico up -d
             docker image prune -f
+
+      # TEMPORARY: routing diagnostics — remove once madebylico.dev serves.
+      - name: Post-deploy diagnostics
+        uses: appleboy/ssh-action@0ff4204d59e8e51228ff73bce53f80d53301dee2 # v1.2.5
+        with:
+          host: ${{ secrets.SERVER_HOST }}
+          username: ${{ secrets.SERVER_USER }}
+          password: ${{ secrets.SERVER_PASSWORD }}
+          port: 22
+          script: |
+            set -u
+            cd "$HOME/madebylico"
+            echo "=== compose ps ==="
+            docker compose -p madebylico ps
+            cid="$(docker compose -p madebylico ps -aq | head -1)"
+            echo "=== state ==="
+            docker inspect --format 'running={{.State.Running}} restarts={{.RestartCount}} health={{if .State.Health}}{{.State.Health.Status}}{{else}}none{{end}}' "$cid"
+            echo "=== health log ==="
+            docker inspect --format '{{if .State.Health}}{{range .State.Health.Log}}exit={{.ExitCode}} out={{.Output}}{{end}}{{end}}' "$cid"
+            echo "=== labels on server compose file ==="
+            grep -E "routers|Host" docker-compose.yml || true
+            echo "=== container logs (tail 15) ==="
+            docker logs --tail 15 "$cid" 2>&1 || true
+            echo "=== proxy network members ==="
+            docker network inspect proxy --format '{{range .Containers}}{{.Name}} {{end}}'
+            echo "=== traefik logs mentioning madebylico ==="
+            docker ps --filter name=traefik --format '{{.Names}}' | head -1 | xargs -I{} sh -c 'docker logs {} 2>&1 | grep -i madebylico | tail -10' || true
