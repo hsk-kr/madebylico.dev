@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { MDXRemote } from "next-mdx-remote/rsc";
@@ -64,6 +65,15 @@ export default async function ProjectPage({
           </a>
         )}
       </p>
+      <div className="relative mt-8 aspect-video overflow-hidden rounded-2xl border border-line bg-neutral-900">
+        <Image
+          src={project.thumbnail}
+          alt={`${project.title} screenshot`}
+          fill
+          unoptimized
+          className="object-cover"
+        />
+      </div>
       <div className="mdx mt-8 max-w-2xl">
         <MDXRemote source={project.body} />
       </div>
