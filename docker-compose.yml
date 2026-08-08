@@ -22,7 +22,7 @@ services:
       - traefik.http.middlewares.madebylico-headers.headers.contentTypeNosniff=true
       - traefik.http.middlewares.madebylico-headers.headers.referrerPolicy=strict-origin-when-cross-origin
       - traefik.http.middlewares.madebylico-headers.headers.customFrameOptionsValue=DENY
-      - traefik.http.routers.madebylico.middlewares=madebylico-www,madebylico-headers
+      - traefik.http.routers.madebylico.middlewares=madebylico-headers,madebylico-www
     healthcheck:
       test: ["CMD", "wget", "-q", "--spider", "http://127.0.0.1:8080/"]
       interval: 30s

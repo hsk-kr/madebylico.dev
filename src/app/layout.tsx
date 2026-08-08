@@ -19,6 +19,9 @@ export const metadata: Metadata = {
     template: "%s — MADEBYLICO",
   },
   description: site.description,
+  alternates: {
+    canonical: "./",
+  },
   openGraph: {
     siteName: site.name,
     type: "website",
