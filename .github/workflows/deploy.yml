@@ -8,7 +8,9 @@ on:
   workflow_dispatch:
 
 concurrency:
-  group: madebylico-deploy
+  # Per-ref so PR verify runs don't queue-cancel each other; deploys still
+  # serialize because they all run on refs/heads/main.
+  group: madebylico-deploy-${{ github.ref }}
   cancel-in-progress: false
 
 permissions:

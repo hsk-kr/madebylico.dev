@@ -9,13 +9,13 @@ services:
     labels:
       - traefik.enable=true
       - traefik.docker.network=proxy
-      - traefik.http.routers.madebylico.rule=Host(`madebylico.com`) || Host(`www.madebylico.com`)
+      - traefik.http.routers.madebylico.rule=Host(`madebylico.dev`) || Host(`www.madebylico.dev`)
       - traefik.http.routers.madebylico.entrypoints=websecure
       - traefik.http.routers.madebylico.tls=true
       - traefik.http.routers.madebylico.tls.certresolver=le
       - traefik.http.services.madebylico.loadbalancer.server.port=8080
-      - traefik.http.middlewares.madebylico-www.redirectregex.regex=^https?://www\.madebylico\.com/(.*)
-      - traefik.http.middlewares.madebylico-www.redirectregex.replacement=https://madebylico.com/$${1}
+      - traefik.http.middlewares.madebylico-www.redirectregex.regex=^https?://www\.madebylico\.dev/(.*)
+      - traefik.http.middlewares.madebylico-www.redirectregex.replacement=https://madebylico.dev/$${1}
       - traefik.http.middlewares.madebylico-www.redirectregex.permanent=true
       - traefik.http.middlewares.madebylico-headers.headers.stsSeconds=31536000
       - traefik.http.middlewares.madebylico-headers.headers.stsIncludeSubdomains=true

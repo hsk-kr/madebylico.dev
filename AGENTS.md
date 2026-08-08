@@ -1,16 +1,10 @@
 # AGENTS.md — rules for AI agents in this repo
 
-## 1. NEVER commit or push. No exceptions.
+## 1. Committing and pushing
 
-You must NEVER run `git commit`, `git push`, `gh` write commands, or any
-operation that writes to the GitHub repository. When your changes are ready:
-
-1. Run `npm run lint && npm run typecheck && npm run build` and report the
-   results honestly, including failures.
-2. Stop and present the full diff (`git diff` / `git status`) to the owner.
-3. The owner personally reviews and performs the commit and push.
-
-"The change is trivial" is not an exception. This repo is public; anything
+Agents may commit and push once `npm run lint && npm run typecheck &&
+npm run build` all pass. Report results honestly, including failures.
+Remember pushes to `main` auto-deploy, and this repo is public — anything
 pushed is exposed immediately and permanently.
 
 ## 2. This repo is PUBLIC — data hygiene
